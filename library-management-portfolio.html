@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LibraHub | Library Management System</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --secondary: #7c3aed;
+      --dark: #111827;
+      --muted: #64748b;
+      --light: #f8fafc;
+      --card: #ffffff;
+    }
+
+    * { scroll-behavior: smooth; }
+
+    body {
+      font-family: "Inter", sans-serif;
+      background: #f8fafc;
+      color: var(--dark);
+    }
+
+    .navbar {
+      backdrop-filter: blur(12px);
+      background: rgba(255,255,255,.92);
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .brand {
+      font-weight: 800;
+      font-size: 1.35rem;
+      color: var(--primary) !important;
+    }
+
+    .hero {
+      min-height: 92vh;
+      display: flex;
+      align-items: center;
+      background:
+        radial-gradient(circle at 85% 20%, rgba(124,58,237,.18), transparent 28%),
+        radial-gradient(circle at 10% 80%, rgba(79,70,229,.13), transparent 25%),
+        linear-gradient(135deg, #ffffff 0%, #eef2ff 100%);
+      padding-top: 80px;
+    }
+
+    .hero h1 {
+      font-family: "Playfair Display", serif;
+      font-size: clamp(2.7rem, 6vw, 5.2rem);
+      line-height: 1.05;
+      font-weight: 700;
+    }
+
+    .gradient-text {
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      color: var(--muted);
+      font-size: 1.08rem;
+      max-width: 620px;
+      line-height: 1.8;
+    }
+
+    .btn-main {
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      padding: 13px 25px;
+      border-radius: 12px;
+      font-weight: 700;
+      box-shadow: 0 12px 30px rgba(79,70,229,.22);
+      transition: .3s;
+    }
+
+    .btn-main:hover {
+      color: white;
+      transform: translateY(-3px);
+      box-shadow: 0 16px 35px rgba(79,70,229,.30);
+    }
+
+    .dashboard {
+      background: rgba(255,255,255,.78);
+      border: 1px solid rgba(255,255,255,.9);
+      border-radius: 28px;
+      padding: 18px;
+      box-shadow: 0 25px 70px rgba(15,23,42,.13);
+      transform: perspective(1000px) rotateY(-4deg) rotateX(2deg);
+      transition: .5s;
+    }
+
+    .dashboard:hover {
+      transform: perspective(1000px) rotateY(0) rotateX(0) translateY(-8px);
+    }
+
+    .dashboard-top {
+      background: #111827;
+      color: white;
+      border-radius: 20px;
+      padding: 20px;
+    }
+
+    .mini-card {
+      background: white;
+      border-radius: 16px;
+      padding: 18px;
+      border: 1px solid #e5e7eb;
+      height: 100%;
+      transition: .3s;
+    }
+
+    .mini-card:hover { transform: translateY(-5px); }
+
+    .section-title {
+      font-family: "Playfair Display", serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+    }
+
+    .section-subtitle {
+      color: var(--muted);
+      max-width: 680px;
+      margin: auto;
+    }
+
+    .stat-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 20px;
+      padding: 25px;
+      transition: .35s;
+      height: 100%;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 18px 45px rgba(15,23,42,.10);
+    }
+
+    .stat-icon {
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: #eef2ff;
+      color: var(--primary);
+      font-size: 1.4rem;
+    }
+
+    .book-card {
+      perspective: 1000px;
+      height: 390px;
+    }
+
+    .book-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform .75s;
+      transform-style: preserve-3d;
+    }
+
+    .book-card:hover .book-inner {
+      transform: rotateY(180deg);
+    }
+
+    .book-front, .book-back {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 18px 45px rgba(15,23,42,.10);
+      border: 1px solid #e5e7eb;
+    }
+
+    .book-front {
+      background: white;
+    }
+
+    .book-cover {
+      height: 210px;
+      display: grid;
+      place-items: center;
+      color: white;
+      font-size: 4.5rem;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    }
+
+    .book-back {
+      background: linear-gradient(135deg, #111827, #312e81);
+      color: white;
+      transform: rotateY(180deg);
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .price {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .badge-soft {
+      background: #eef2ff;
+      color: #4338ca;
+      border-radius: 50px;
+      padding: 6px 11px;
+      font-size: .78rem;
+      font-weight: 700;
+    }
+
+    .table-wrap {
+      background: white;
+      border-radius: 22px;
+      border: 1px solid #e5e7eb;
+      overflow: hidden;
+      box-shadow: 0 15px 40px rgba(15,23,42,.06);
+    }
+
+    .table thead th {
+      background: #111827;
+      color: white;
+      border: 0;
+      padding: 15px;
+    }
+
+    .table td {
+      padding: 15px;
+      vertical-align: middle;
+    }
+
+    .feature {
+      border-radius: 20px;
+      background: white;
+      border: 1px solid #e5e7eb;
+      padding: 25px;
+      transition: .3s;
+    }
+
+    .feature:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 15px 40px rgba(15,23,42,.08);
+    }
+
+    .feature i {
+      font-size: 2rem;
+      color: var(--primary);
+    }
+
+    .cta {
+      background: linear-gradient(135deg, #111827, #312e81);
+      color: white;
+      border-radius: 30px;
+      padding: 65px 30px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .cta::after {
+      content: "";
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.07);
+      right: -80px;
+      top: -80px;
+    }
+
+    footer {
+      background: #0b1120;
+      color: #cbd5e1;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(35px);
+      transition: .8s ease;
+    }
+
+    .reveal.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .search-box {
+      border-radius: 14px;
+      border: 1px solid #dbe2ea;
+      padding: 12px 15px;
+      outline: none;
+      width: 100%;
+    }
+
+    .search-box:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(79,70,229,.08);
+    }
+
+    @media (max-width: 991px) {
+      .hero { padding-top: 110px; }
+      .dashboard { margin-top: 40px; transform: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg fixed-top">
+  <div class="container">
+    <a class="navbar-brand brand" href="#">
+      <i class="bi bi-book-half me-2"></i>LibraHub
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+        <li class="nav-item"><a class="nav-link" href="#overview">Overview</a></li>
+        <li class="nav-item"><a class="nav-link" href="#books">Books</a></li>
+        <li class="nav-item"><a class="nav-link" href="#distribution">Distribution</a></li>
+        <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+        <li class="nav-item"><a class="btn btn-main ms-lg-2" href="#books">Explore Books</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="row align-items-center g-5">
+
+      <div class="col-lg-6 reveal">
+        <span class="badge-soft">
+          <i class="bi bi-stars me-1"></i> Smart Library Management
+        </span>
+
+        <h1 class="mt-4">
+          Manage your library with
+          <span class="gradient-text">clarity & style.</span>
+        </h1>
+
+        <p class="hero-subtitle mt-4">
+          A modern Library Management System portfolio concept for managing
+          books, prices, availability, members and book distribution from one
+          professional dashboard.
+        </p>
+
+        <div class="d-flex flex-wrap gap-3 mt-4">
+          <a href="#overview" class="btn btn-main">
+            View Dashboard <i class="bi bi-arrow-right ms-2"></i>
+          </a>
+          <a href="#books" class="btn btn-outline-dark px-4 py-3 rounded-3">
+            Browse Books
+          </a>
+        </div>
+      </div>
+
+      <div class="col-lg-6 reveal">
+        <div class="dashboard">
+          <div class="dashboard-top">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <div>
+                <small class="text-white-50">Library Dashboard</small>
+                <h4 class="mb-0 mt-1">Good morning, Librarian</h4>
+              </div>
+              <i class="bi bi-grid-1x2-fill fs-3"></i>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-6">
+                <div class="mini-card">
+                  <small class="text-secondary">Total Books</small>
+                  <h3 class="mb-0 mt-2">2,480</h3>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="mini-card">
+                  <small class="text-secondary">Available</small>
+                  <h3 class="mb-0 mt-2">1,872</h3>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="mini-card">
+                  <small class="text-secondary">Issued</small>
+                  <h3 class="mb-0 mt-2">608</h3>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="mini-card">
+                  <small class="text-secondary">Members</small>
+                  <h3 class="mb-0 mt-2">842</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- OVERVIEW -->
+<section id="overview" class="py-5">
+  <div class="container py-5">
+
+    <div class="text-center reveal">
+      <span class="badge-soft">SYSTEM OVERVIEW</span>
+      <h2 class="section-title mt-3">Everything in one place</h2>
+      <p class="section-subtitle mt-3">
+        Track your library collection, book prices, availability and
+        distribution with a clean and responsive interface.
+      </p>
+    </div>
+
+    <div class="row g-4 mt-4">
+      <div class="col-md-6 col-lg-3 reveal">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="bi bi-book"></i></div>
+          <h3 class="mt-4">2,480</h3>
+          <p class="text-secondary mb-0">Total Books</p>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-3 reveal">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="bi bi-check2-circle"></i></div>
+          <h3 class="mt-4">1,872</h3>
+          <p class="text-secondary mb-0">Available Books</p>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-3 reveal">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="bi bi-arrow-left-right"></i></div>
+          <h3 class="mt-4">608</h3>
+          <p class="text-secondary mb-0">Issued Books</p>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-3 reveal">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="bi bi-people"></i></div>
+          <h3 class="mt-4">842</h3>
+          <p class="text-secondary mb-0">Registered Members</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BOOKS -->
+<section id="books" class="py-5 bg-white">
+  <div class="container py-5">
+
+    <div class="row align-items-end mb-5 reveal">
+      <div class="col-lg-7">
+        <span class="badge-soft">BOOK COLLECTION</span>
+        <h2 class="section-title mt-3">Popular books</h2>
+        <p class="text-secondary">
+          Hover over a book card to flip it and view price, stock and
+          distribution information.
+        </p>
+      </div>
+
+      <div class="col-lg-5 mt-3 mt-lg-0">
+        <input id="bookSearch" class="search-box" type="text"
+               placeholder="Search book name or category...">
+      </div>
+    </div>
+
+    <div id="bookContainer" class="row g-4">
+
+      <!-- BOOK 1 -->
+      <div class="col-md-6 col-lg-4 book-item reveal">
+        <div class="book-card">
+          <div class="book-inner">
+            <div class="book-front">
+              <div class="book-cover">
+                <i class="bi bi-code-slash"></i>
+              </div>
+              <div class="p-4">
+                <span class="badge-soft">Programming</span>
+                <h4 class="mt-3">Java Programming</h4>
+                <p class="text-secondary">Core concepts and application development.</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="price">₹599</span>
+                  <span class="text-success fw-semibold">In Stock</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="book-back">
+              <i class="bi bi-book-half fs-1 mb-3"></i>
+              <h3>Java Programming</h3>
+              <p class="text-white-50">
+                Complete reference for Java fundamentals and object-oriented programming.
+              </p>
+              <hr>
+              <p><strong>Price:</strong> ₹599</p>
+              <p><strong>Copies:</strong> 42</p>
+              <p><strong>Distribution:</strong> 28 Issued</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOOK 2 -->
+      <div class="col-md-6 col-lg-4 book-item reveal">
+        <div class="book-card">
+          <div class="book-inner">
+            <div class="book-front">
+              <div class="book-cover" style="background:linear-gradient(135deg,#059669,#0f766e);">
+                <i class="bi bi-database"></i>
+              </div>
+              <div class="p-4">
+                <span class="badge-soft">Database</span>
+                <h4 class="mt-3">SQL Mastery</h4>
+                <p class="text-secondary">Queries, database design and data management.</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="price">₹449</span>
+                  <span class="text-success fw-semibold">In Stock</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="book-back">
+              <i class="bi bi-database fs-1 mb-3"></i>
+              <h3>SQL Mastery</h3>
+              <p class="text-white-50">
+                Practical SQL concepts from basic queries to advanced database operations.
+              </p>
+              <hr>
+              <p><strong>Price:</strong> ₹449</p>
+              <p><strong>Copies:</strong> 35</p>
+              <p><strong>Distribution:</strong> 19 Issued</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOOK 3 -->
+      <div class="col-md-6 col-lg-4 book-item reveal">
+        <div class="book-card">
+          <div class="book-inner">
+            <div class="book-front">
+              <div class="book-cover" style="background:linear-gradient(135deg,#ea580c,#c2410c);">
+                <i class="bi bi-window-stack"></i>
+              </div>
+              <div class="p-4">
+                <span class="badge-soft">Web Development</span>
+                <h4 class="mt-3">Modern Web Design</h4>
+                <p class="text-secondary">HTML, CSS, JavaScript and responsive UI.</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="price">₹699</span>
+                  <span class="text-warning fw-semibold">Low Stock</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="book-back">
+              <i class="bi bi-window-stack fs-1 mb-3"></i>
+              <h3>Modern Web Design</h3>
+              <p class="text-white-50">
+                Learn responsive websites, modern interfaces and interactive web experiences.
+              </p>
+              <hr>
+              <p><strong>Price:</strong> ₹699</p>
+              <p><strong>Copies:</strong> 18</p>
+              <p><strong>Distribution:</strong> 31 Issued</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- DISTRIBUTION -->
+<section id="distribution" class="py-5">
+  <div class="container py-5">
+
+    <div class="text-center reveal">
+      <span class="badge-soft">BOOK DISTRIBUTION</span>
+      <h2 class="section-title mt-3">Inventory & distribution</h2>
+      <p class="section-subtitle mt-3">
+        A simple view of how books are distributed between available,
+        issued and reserved collections.
+      </p>
+    </div>
+
+    <div class="table-wrap mt-5 reveal">
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <thead>
+            <tr>
+              <th>Book Name</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Total Copies</th>
+              <th>Issued</th>
+              <th>Available</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="fw-semibold">Java Programming</td>
+              <td>Programming</td>
+              <td>₹599</td>
+              <td>70</td>
+              <td>28</td>
+              <td><span class="badge bg-success">42</span></td>
+            </tr>
+            <tr>
+              <td class="fw-semibold">SQL Mastery</td>
+              <td>Database</td>
+              <td>₹449</td>
+              <td>54</td>
+              <td>19</td>
+              <td><span class="badge bg-success">35</span></td>
+            </tr>
+            <tr>
+              <td class="fw-semibold">Modern Web Design</td>
+              <td>Web Development</td>
+              <td>₹699</td>
+              <td>49</td>
+              <td>31</td>
+              <td><span class="badge bg-warning text-dark">18</span></td>
+            </tr>
+            <tr>
+              <td class="fw-semibold">Data Science Basics</td>
+              <td>Data Science</td>
+              <td>₹799</td>
+              <td>60</td>
+              <td>22</td>
+              <td><span class="badge bg-success">38</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" class="py-5 bg-white">
+  <div class="container py-5">
+
+    <div class="text-center reveal">
+      <span class="badge-soft">SYSTEM FEATURES</span>
+      <h2 class="section-title mt-3">Designed for a modern library</h2>
+    </div>
+
+    <div class="row g-4 mt-4">
+      <div class="col-md-6 col-lg-4 reveal">
+        <div class="feature h-100">
+          <i class="bi bi-search"></i>
+          <h4 class="mt-4">Smart Search</h4>
+          <p class="text-secondary mb-0">
+            Quickly search books by name or category using the interactive search field.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4 reveal">
+        <div class="feature h-100">
+          <i class="bi bi-bar-chart-line"></i>
+          <h4 class="mt-4">Inventory Overview</h4>
+          <p class="text-secondary mb-0">
+            View total, issued and available books through clear dashboard statistics.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4 reveal">
+        <div class="feature h-100">
+          <i class="bi bi-arrow-left-right"></i>
+          <h4 class="mt-4">Distribution Tracking</h4>
+          <p class="text-secondary mb-0">
+            Track how many copies are distributed and how many remain available.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4 reveal">
+        <div class="feature h-100">
+          <i class="bi bi-phone"></i>
+          <h4 class="mt-4">Responsive UI</h4>
+          <p class="text-secondary mb-0">
+            The interface adapts smoothly to desktop, tablet and mobile screens.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4 reveal">
+        <div class="feature h-100">
+          <i class="bi bi-layers"></i>
+          <h4 class="mt-4">Bootstrap 5</h4>
+          <p class="text-secondary mb-0">
+            Built with Bootstrap 5 grid, buttons, badges, responsive tables and components.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4 reveal">
+        <div class="feature h-100">
+          <i class="bi bi-stars"></i>
+          <h4 class="mt-4">UI/UX Animation</h4>
+          <p class="text-secondary mb-0">
+            Includes hover effects, 3D flip cards, reveal animations and smooth scrolling.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="py-5">
+  <div class="container py-4">
+    <div class="cta text-center reveal">
+      <span class="badge bg-light text-dark rounded-pill px-3 py-2">LIBRAHUB</span>
+      <h2 class="display-5 fw-bold mt-4">A smarter way to manage books.</h2>
+      <p class="text-white-50 mx-auto mt-3" style="max-width:650px;">
+        This portfolio demonstrates a professional front-end concept for
+        a Library Management System using HTML, CSS, JavaScript and Bootstrap 5.
+      </p>
+      <a href="#overview" class="btn btn-light px-4 py-3 rounded-3 fw-bold mt-3">
+        Back to Dashboard <i class="bi bi-arrow-up ms-2"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="py-4">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <strong><i class="bi bi-book-half me-2"></i>LibraHub</strong>
+        <p class="mb-0 mt-2 small">Library Management System Portfolio</p>
+      </div>
+      <div class="col-md-6 text-md-end mt-3 mt-md-0">
+        <small>Built with HTML • CSS • JavaScript • Bootstrap 5</small>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  // Scroll reveal animation
+  const revealItems = document.querySelectorAll(".reveal");
+
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("show");
+      }
+    });
+  }, { threshold: 0.12 });
+
+  revealItems.forEach(item => revealObserver.observe(item));
+
+
+  // Book search
+  const searchInput = document.getElementById("bookSearch");
+  const bookItems = document.querySelectorAll(".book-item");
+
+  searchInput.addEventListener("input", function () {
+    const searchValue = this.value.toLowerCase().trim();
+
+    bookItems.forEach(book => {
+      const text = book.innerText.toLowerCase();
+
+      if (text.includes(searchValue)) {
+        book.style.display = "";
+      } else {
+        book.style.display = "none";
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
